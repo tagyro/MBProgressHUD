@@ -1,12 +1,12 @@
 //
 //  MBProgressHUD.h
-//  Version 0.6
+//  Version 0.5
 //  Created by Matej Bukovinski on 2.4.09.
 //
 
 // This code is distributed under the terms and conditions of the MIT license. 
 
-// Copyright (c) 2013 Matej Bukovinski
+// Copyright (c) 2011 Matej Bukovinski
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,14 +56,6 @@ typedef enum {
 } MBProgressHUDAnimation;
 
 
-#ifndef MB_INSTANCETYPE
-#if __has_feature(objc_instancetype)
-	#define MB_INSTANCETYPE instancetype
-#else
-	#define MB_INSTANCETYPE id
-#endif
-#endif
-
 #ifndef MB_STRONG
 #if __has_feature(objc_arc)
 	#define MB_STRONG strong
@@ -85,6 +77,8 @@ typedef enum {
 #if NS_BLOCKS_AVAILABLE
 typedef void (^MBProgressHUDCompletionBlock)();
 #endif
+
+
 
 
 /** 
@@ -119,7 +113,7 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * @see hideHUDForView:animated:
  * @see animationType
  */
-+ (MB_INSTANCETYPE)showHUDAddedTo:(UIView *)view animated:(BOOL)animated;
++ (MBProgressHUD *)showHUDAddedTo:(UIView *)view animated:(BOOL)animated;
 
 /**
  * Finds the top-most HUD subview and hides it. The counterpart to this method is showHUDAddedTo:animated:.
@@ -142,7 +136,7 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * animations while disappearing.
  * @return the number of HUDs found and removed.
  *
- * @see hideHUDForView:animated:
+ * @see hideAllHUDForView:animated:
  * @see animationType
  */
 + (NSUInteger)hideAllHUDsForView:(UIView *)view animated:(BOOL)animated;
@@ -153,7 +147,7 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * @param view The view that is going to be searched.
  * @return A reference to the last HUD subview discovered.
  */
-+ (MB_INSTANCETYPE)HUDForView:(UIView *)view;
++ (MBProgressHUD *)HUDForView:(UIView *)view;
 
 /**
  * Finds all HUD subviews and returns them.
@@ -210,7 +204,7 @@ typedef void (^MBProgressHUDCompletionBlock)();
  *
  * @param animated If set to YES the HUD will disappear using the current animationType. If set to NO the HUD will not use
  * animations while disappearing.
- * @param delay Delay in seconds until the HUD is hidden.
+ * @param delay Delay in secons until the HUD is hidden.
  *
  * @see animationType
  */
@@ -235,21 +229,21 @@ typedef void (^MBProgressHUDCompletionBlock)();
 /**
  * Shows the HUD while a block is executing on a background queue, then hides the HUD.
  *
- * @see showAnimated:whileExecutingBlock:onQueue:completionBlock:
+ * @see showAnimated:whileExecutingBlock:onQueue:completion:
  */
 - (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block;
 
 /**
  * Shows the HUD while a block is executing on a background queue, then hides the HUD.
  *
- * @see showAnimated:whileExecutingBlock:onQueue:completionBlock:
+ * @see showAnimated:whileExecutingBlock:onQueue:completion:
  */
 - (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block completionBlock:(MBProgressHUDCompletionBlock)completion;
 
 /**
  * Shows the HUD while a block is executing on the specified dispatch queue, then hides the HUD.
  *
- * @see showAnimated:whileExecutingBlock:onQueue:completionBlock:
+ * @see showAnimated:whileExecutingBlock:onQueue:completion:
  */
 - (void)showAnimated:(BOOL)animated whileExecutingBlock:(dispatch_block_t)block onQueue:(dispatch_queue_t)queue;
 
@@ -259,7 +253,7 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * @param animated If set to YES the HUD will (dis)appear using the current animationType. If set to NO the HUD will
  * not use animations while (dis)appearing.
  * @param block The block to be executed while the HUD is shown.
- * @param queue The dispatch queue on which the block should be executed.
+ * @param queue The dispatch queue on which the block should be execouted.
  * @param completion The block to be executed on completion.
  *
  * @see completionBlock
@@ -268,9 +262,9 @@ typedef void (^MBProgressHUDCompletionBlock)();
 		  completionBlock:(MBProgressHUDCompletionBlock)completion;
 
 /**
- * A block that gets called after the HUD was completely hidden.
+ * A block that gets called after the HUD was completely hiden.
  */
-@property (copy) MBProgressHUDCompletionBlock completionBlock;
+@property (atomic, copy) MBProgressHUDCompletionBlock completionBlock;
 
 #endif
 
@@ -279,73 +273,73 @@ typedef void (^MBProgressHUDCompletionBlock)();
  *
  * @see MBProgressHUDMode
  */
-@property (assign) MBProgressHUDMode mode;
+@property (atomic, assign) MBProgressHUDMode mode;
 
 /**
  * The animation type that should be used when the HUD is shown and hidden. 
  *
  * @see MBProgressHUDAnimation
  */
-@property (assign) MBProgressHUDAnimation animationType;
+@property (atomic, assign) MBProgressHUDAnimation animationType;
 
 /**
  * The UIView (e.g., a UIImageView) to be shown when the HUD is in MBProgressHUDModeCustomView.
  * For best results use a 37 by 37 pixel view (so the bounds match the built in indicator bounds). 
  */
-@property (MB_STRONG) UIView *customView;
+@property (atomic, MB_STRONG) UIView *customView;
 
 /** 
  * The HUD delegate object. 
  *
  * @see MBProgressHUDDelegate
  */
-@property (MB_WEAK) id<MBProgressHUDDelegate> delegate;
+@property (atomic, MB_WEAK) id<MBProgressHUDDelegate> delegate;
 
 /** 
  * An optional short message to be displayed below the activity indicator. The HUD is automatically resized to fit
  * the entire text. If the text is too long it will get clipped by displaying "..." at the end. If left unchanged or
  * set to @"", then no message is displayed.
  */
-@property (copy) NSString *labelText;
+@property (atomic, copy) NSString *labelText;
 
 /** 
  * An optional details message displayed below the labelText message. This message is displayed only if the labelText
  * property is also set and is different from an empty string (@""). The details text can span multiple lines. 
  */
-@property (copy) NSString *detailsLabelText;
+@property (atomic, copy) NSString *detailsLabelText;
 
 /** 
  * The opacity of the HUD window. Defaults to 0.8 (80% opacity). 
  */
-@property (assign) float opacity;
+@property (atomic, assign) float opacity;
 
 /**
  * The color of the HUD window. Defaults to black. If this property is set, color is set using
  * this UIColor and the opacity property is not used.  using retain because performing copy on
  * UIColor base colors (like [UIColor greenColor]) cause problems with the copyZone.
  */
-@property (MB_STRONG) UIColor *color;
+@property (atomic, MB_STRONG) UIColor *color;
 
 /** 
  * The x-axis offset of the HUD relative to the centre of the superview. 
  */
-@property (assign) float xOffset;
+@property (atomic, assign) float xOffset;
 
 /** 
- * The y-axis offset of the HUD relative to the centre of the superview. 
+ * The y-ayis offset of the HUD relative to the centre of the superview. 
  */
-@property (assign) float yOffset;
+@property (atomic, assign) float yOffset;
 
 /**
- * The amount of space between the HUD edge and the HUD elements (labels, indicators or custom views). 
+ * The amounth of space between the HUD edge and the HUD elements (labels, indicators or custom views). 
  * Defaults to 20.0
  */
-@property (assign) float margin;
+@property (atomic, assign) float margin;
 
 /** 
  * Cover the HUD background view with a radial gradient. 
  */
-@property (assign) BOOL dimBackground;
+@property (atomic, assign) BOOL dimBackground;
 
 /*
  * Grace period is the time (in seconds) that the invoked method may be run without 
@@ -356,14 +350,14 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * Grace time functionality is only supported when the task status is known!
  * @see taskInProgress
  */
-@property (assign) float graceTime;
+@property (atomic, assign) float graceTime;
 
 /**
  * The minimum time (in seconds) that the HUD is shown. 
  * This avoids the problem of the HUD being shown and than instantly hidden.
  * Defaults to 0 (no minimum show time).
  */
-@property (assign) float minShowTime;
+@property (atomic, assign) float minShowTime;
 
 /**
  * Indicates that the executed operation is in progress. Needed for correct graceTime operation.
@@ -373,38 +367,38 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * you need to set this property when your task starts and completes in order to have normal graceTime 
  * functionality.
  */
-@property (assign) BOOL taskInProgress;
+@property (atomic, assign) BOOL taskInProgress;
 
 /**
  * Removes the HUD from its parent view when hidden. 
  * Defaults to NO. 
  */
-@property (assign) BOOL removeFromSuperViewOnHide;
+@property (atomic, assign) BOOL removeFromSuperViewOnHide;
 
 /** 
  * Font to be used for the main label. Set this property if the default is not adequate. 
  */
-@property (MB_STRONG) UIFont* labelFont;
+@property (atomic, MB_STRONG) UIFont* labelFont;
 
 /** 
  * Font to be used for the details label. Set this property if the default is not adequate. 
  */
-@property (MB_STRONG) UIFont* detailsLabelFont;
+@property (atomic, MB_STRONG) UIFont* detailsLabelFont;
 
 /** 
  * The progress of the progress indicator, from 0.0 to 1.0. Defaults to 0.0. 
  */
-@property (assign) float progress;
+@property (atomic, assign) float progress;
 
 /**
  * The minimum size of the HUD bezel. Defaults to CGSizeZero (no minimum size).
  */
-@property (assign) CGSize minSize;
+@property (atomic, assign) CGSize minSize;
 
 /**
  * Force the HUD dimensions to be equal if possible. 
  */
-@property (assign, getter = isSquare) BOOL square;
+@property (atomic, assign, getter = isSquare) BOOL square;
 
 @end
 
@@ -430,18 +424,6 @@ typedef void (^MBProgressHUDCompletionBlock)();
  * Progress (0.0 to 1.0)
  */
 @property (nonatomic, assign) float progress;
-
-/**
- * Indicator progress color.
- * Defaults to white [UIColor whiteColor]
- */
-@property (nonatomic, MB_STRONG) UIColor *progressTintColor;
-
-/**
- * Indicator background (non-progress) color.
- * Defaults to translucent white (alpha 0.1)
- */
-@property (nonatomic, MB_STRONG) UIColor *backgroundTintColor;
 
 /*
  * Display mode - NO = round or YES = annular. Defaults to round.
